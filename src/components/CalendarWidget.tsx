@@ -38,8 +38,8 @@ export default function CalendarWidget({ events }: CalendarWidgetProps) {
 
   const monthStart = startOfMonth(currentMonth);
   const monthEnd = endOfMonth(monthStart);
-  const startDate = startOfWeek(monthStart, { weekStarts: 1 }); // weekStarts: 1 means Monday
-  const endDate = endOfWeek(monthEnd, { weekStarts: 1 });
+  const startDate = startOfWeek(monthStart, { weekStartsOn: 1 }); // weekStartsOn: 1 means Monday
+  const endDate = endOfWeek(monthEnd, { weekStartsOn: 1 });
 
   const dateFormat = "d";
   const days = eachDayOfInterval({
