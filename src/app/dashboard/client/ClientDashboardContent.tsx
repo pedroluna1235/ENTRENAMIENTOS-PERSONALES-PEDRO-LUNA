@@ -5,7 +5,7 @@ import { addWeightRecord, saveExerciseFeedback, saveSessionRPE } from '@/app/act
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { ChevronDown, ChevronUp, Save, CheckCircle, PlayCircle, Info, Dumbbell, Calendar as CalendarIcon, Check } from 'lucide-react';
+import { ChevronDown, ChevronUp, Save, CheckCircle, PlayCircle, Info, Dumbbell, Calendar as CalendarIcon, Check, TrendingUp } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import CalendarWidget, { CalendarEvent } from '@/components/CalendarWidget';
@@ -473,7 +473,7 @@ export default function ClientDashboardContent({
           <section className="bg-neutral-900 rounded-3xl p-6 border border-neutral-800 shadow-xl relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl"></div>
             <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2 relative z-10">
-              <LineChart className="text-blue-400" size={24} /> 
+              <TrendingUp className="text-blue-400" size={24} /> 
               Evolución de Peso
             </h2>
             <div className="relative z-10">
