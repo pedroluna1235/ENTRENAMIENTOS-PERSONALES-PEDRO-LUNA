@@ -28,9 +28,11 @@ export type CalendarEvent = {
 
 interface CalendarWidgetProps {
   events: CalendarEvent[];
+  onDayClick?: (dateString: string) => void;
+  selectedDate?: string;
 }
 
-export default function CalendarWidget({ events }: CalendarWidgetProps) {
+export default function CalendarWidget({ events, onDayClick, selectedDate }: CalendarWidgetProps) {
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
   const nextMonth = () => setCurrentMonth(addMonths(currentMonth, 1));
@@ -92,9 +94,10 @@ export default function CalendarWidget({ events }: CalendarWidgetProps) {
           return (
             <div 
               key={day.toString() + i} 
-              className={`min-h-[100px] sm:min-h-[120px] p-2 border-b border-r border-neutral-800/50 transition-colors ${
+              onClick={() => onDayClick && onDayClick(format(day, 'yyyy-MM-dd'))}
+              className={`min-h-[100px] sm:min-h-[120px] p-2 border-b border-r border-neutral-800/50 transition-all cursor-pointer ${
                 !isSameMonth(day, monthStart) ? 'bg-neutral-950/40 text-neutral-600' : 'bg-neutral-900 text-neutral-300'
-              } hover:bg-neutral-800/30`}
+              } hover:bg-neutral-800/60 ${selectedDate === format(day, 'yyyy-MM-dd') ? 'ring-2 ring-inset ring-blue-500 bg-blue-900/10' : ''}`}
             >
               <div className="flex justify-end">
                 <span className={`text-sm font-medium w-7 h-7 flex items-center justify-center rounded-full ${
@@ -104,18 +107,18 @@ export default function CalendarWidget({ events }: CalendarWidgetProps) {
                 </span>
               </div>
               
-              <div className="mt-2 flex flex-col gap-1 overflow-y-auto max-h-[70px] sm:max-h-[90px] pr-1 styled-scrollbar">
+              <div className="mt-2 flex flex-col gap-1 overflow-y-auto max-h-[70px] sm:max-h-[90px] scrollbar-hide [&::-webkit-scrollbar]:hidden">
                 {dayEvents.map(event => (
                   <div 
                     key={event.id}
-                    className={`px-2 py-1 text-xs rounded-md ${event.colorClass || 'bg-blue-500/20 text-blue-400 border border-blue-500/20'} truncate flex flex-col gap-0.5`}
+                    className={`px-1 sm:px-2 py-1 text-[10px] sm:text-xs rounded-md ${event.colorClass || 'bg-blue-500/20 text-blue-400 border border-blue-500/20'} w-full overflow-hidden flex flex-col gap-0.5`}
                     title={event.title + (event.subtitle ? ` - ${event.subtitle}` : '') + (event.rpe ? ` - RPE: ${event.rpe}/10` : '')}
                   >
-                    <span className="font-semibold block truncate">{event.title}</span>
-                    {event.subtitle && <span className="text-[10px] opacity-80 block truncate">{event.subtitle}</span>}
+                    <span className="font-bold block truncate w-full">{event.title}</span>
+                    {event.subtitle && <span className="text-[9px] sm:text-[10px] opacity-90 block truncate w-full">{event.subtitle}</span>}
                     {event.rpe && (
-                      <span className="text-[10px] font-bold mt-0.5 px-1.5 py-0.5 bg-black/30 rounded w-fit">
-                        RPE: {event.rpe}/10
+                      <span className="text-[9px] sm:text-[10px] font-bold px-1 py-0.5 bg-black/30 rounded w-fit truncate max-w-full">
+                        RPE: {event.rpe}
                       </span>
                     )}
                   </div>
