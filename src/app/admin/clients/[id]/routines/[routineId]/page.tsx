@@ -51,7 +51,7 @@ export default async function RoutineDetailPage({
   // Agrupar los ejercicios por día si tienen 'day_assigned'
   const groupedExercises: { [key: string]: any[] } = {};
   
-  workout.workout_exercises?.forEach((ex: any) => {
+  workout.workout_exercises?.sort((a: any, b: any) => (a.order_index || 0) - (b.order_index || 0)).forEach((ex: any) => {
     const day = ex.day_assigned || 'Sin día específico';
     if (!groupedExercises[day]) {
       groupedExercises[day] = [];

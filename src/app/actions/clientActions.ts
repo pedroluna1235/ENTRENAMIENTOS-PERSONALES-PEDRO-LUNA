@@ -106,7 +106,7 @@ export async function createRoutine(
 
   // 2. Insert exercises
   if (exercises.length > 0) {
-    const workoutExercises = exercises.map((ex) => ({
+    const workoutExercises = exercises.map((ex, idx) => ({
       workout_id: workout.id,
       exercise_id: ex.exercise_id,
       sets: ex.sets,
@@ -114,6 +114,7 @@ export async function createRoutine(
       weight_guidelines: ex.weight_guidelines,
       trainer_notes: ex.trainer_notes,
       exercise_photo_url: ex.exercise_photo_url || null,
+      order_index: idx,
       ...(ex.day_assigned && { day_assigned: ex.day_assigned }),
     }));
 
@@ -186,7 +187,8 @@ export async function updateRoutine(
   }
 
   // Insert or Update exercises
-  for (const ex of exercises) {
+  for (let i = 0; i < exercises.length; i++) {
+    const ex = exercises[i];
     const payload = {
       workout_id: workoutId,
       exercise_id: ex.exercise_id,
@@ -196,6 +198,7 @@ export async function updateRoutine(
       trainer_notes: ex.trainer_notes,
       exercise_photo_url: ex.exercise_photo_url || null,
       day_assigned: ex.day_assigned || null,
+      order_index: i,
     };
 
     if (ex.id && existingDbIds.includes(ex.id)) {

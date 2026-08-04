@@ -181,7 +181,7 @@ export default function ClientDashboardContent({
                     <div className="p-4 md:p-6 space-y-8 bg-neutral-950">
                       {(() => {
                         const groupedExercises: { [key: string]: any[] } = {};
-                        workout.workout_exercises?.forEach((we: any) => {
+                        workout.workout_exercises?.sort((a: any, b: any) => (a.order_index || 0) - (b.order_index || 0)).forEach((we: any) => {
                           const day = we.day_assigned || 'Sin día específico';
                           if (!groupedExercises[day]) groupedExercises[day] = [];
                           groupedExercises[day].push(we);
