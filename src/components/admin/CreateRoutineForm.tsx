@@ -219,10 +219,9 @@ export default function CreateRoutineForm({
               onChange={(e) => {
                 const val = e.target.value;
                 setRestBetweenSets(val);
-                // Auto-fill existing exercises that don't have it set
                 setRoutineExercises(prev => prev.map(ex => ({
                   ...ex,
-                  rest_between_sets: ex.rest_between_sets || val
+                  rest_between_sets: val
                 })));
               }}
               placeholder="Ej: 60s, 1.5 min..."
@@ -239,7 +238,7 @@ export default function CreateRoutineForm({
                 setRestBetweenReps(val);
                 setRoutineExercises(prev => prev.map(ex => ({
                   ...ex,
-                  rest_between_reps: ex.rest_between_reps || val
+                  rest_between_reps: val
                 })));
               }}
               placeholder="Ej: 0s, 5s..."

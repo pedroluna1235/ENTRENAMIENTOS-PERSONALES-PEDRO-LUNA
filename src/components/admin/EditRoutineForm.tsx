@@ -238,7 +238,7 @@ export default function EditRoutineForm({
                 setRestBetweenSets(val);
                 setRoutineExercises(prev => prev.map(ex => ({
                   ...ex,
-                  rest_between_sets: ex.rest_between_sets || val
+                  rest_between_sets: val
                 })));
               }}
               placeholder="Ej: 60s, 1.5 min..."
@@ -255,7 +255,7 @@ export default function EditRoutineForm({
                 setRestBetweenReps(val);
                 setRoutineExercises(prev => prev.map(ex => ({
                   ...ex,
-                  rest_between_reps: ex.rest_between_reps || val
+                  rest_between_reps: val
                 })));
               }}
               placeholder="Ej: 0s, 5s..."
