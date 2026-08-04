@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { updateRoutine } from '@/app/actions/clientActions';
 import { supabase } from '@/lib/supabaseClient';
-import { Save, Plus, Trash2, ArrowLeft, Loader2, Dumbbell, Image as ImageIcon } from 'lucide-react';
+import { Save, Plus, Trash2, ArrowLeft, Loader2, Dumbbell, Image as ImageIcon, ArrowUp, ArrowDown } from 'lucide-react';
 import Link from 'next/link';
 
 type ExerciseData = {
@@ -71,6 +71,17 @@ export default function EditRoutineForm({
 
   const removeExercise = (id: string) => {
     setRoutineExercises(routineExercises.filter(ex => ex.id !== id));
+  };
+
+  const moveExercise = (index: number, direction: 'up' | 'down') => {
+    if (direction === 'up' && index === 0) return;
+    if (direction === 'down' && index === routineExercises.length - 1) return;
+    
+    const newExercises = [...routineExercises];
+    const swapIndex = direction === 'up' ? index - 1 : index + 1;
+    [newExercises[index], newExercises[swapIndex]] = [newExercises[swapIndex], newExercises[index]];
+    
+    setRoutineExercises(newExercises);
   };
 
   const updateExercise = (id: string, field: keyof ExerciseData, value: any) => {
@@ -237,13 +248,31 @@ export default function EditRoutineForm({
           <div className="space-y-6">
             {routineExercises.map((ex, index) => (
               <div key={ex.id} className="relative bg-neutral-950 border border-neutral-800 rounded-xl p-6 group">
-                <button
-                  type="button"
-                  onClick={() => removeExercise(ex.id)}
-                  className="absolute top-4 right-4 p-2 text-neutral-500 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-colors"
-                >
-                  <Trash2 className="w-5 h-5" />
-                </button>
+                <div className="absolute top-4 right-4 flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => moveExercise(index, 'up')}
+                    disabled={index === 0}
+                    className="p-2 text-neutral-500 hover:text-white hover:bg-neutral-800 rounded-lg transition-colors disabled:opacity-30"
+                  >
+                    <ArrowUp className="w-5 h-5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => moveExercise(index, 'down')}
+                    disabled={index === routineExercises.length - 1}
+                    className="p-2 text-neutral-500 hover:text-white hover:bg-neutral-800 rounded-lg transition-colors disabled:opacity-30"
+                  >
+                    <ArrowDown className="w-5 h-5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => removeExercise(ex.id)}
+                    className="p-2 text-neutral-500 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-colors"
+                  >
+                    <Trash2 className="w-5 h-5" />
+                  </button>
+                </div>
                 
                 <h4 className="text-emerald-500 font-bold mb-4">Ejercicio {index + 1}</h4>
                 

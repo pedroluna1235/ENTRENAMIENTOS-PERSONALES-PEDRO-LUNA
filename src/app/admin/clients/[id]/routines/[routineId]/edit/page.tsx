@@ -46,6 +46,10 @@ export default async function EditRoutinePage({ params }: { params: Promise<{ id
     redirect(`/admin/clients/${id}`);
   }
 
+  if (workout.workout_exercises) {
+    workout.workout_exercises.sort((a: any, b: any) => (a.order_index || 0) - (b.order_index || 0));
+  }
+
   return (
     <div className="p-8 max-w-5xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-700">
       <EditRoutineForm 
