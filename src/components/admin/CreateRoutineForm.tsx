@@ -17,6 +17,8 @@ type ExerciseData = {
   trainer_notes: string;
   exercise_photo_url: string;
   uploading: boolean;
+  rest_between_sets?: string;
+  rest_between_reps?: string;
 };
 
 export default function CreateRoutineForm({ 
@@ -35,6 +37,8 @@ export default function CreateRoutineForm({
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [notes, setNotes] = useState('');
+  const [restBetweenSets, setRestBetweenSets] = useState('');
+  const [restBetweenReps, setRestBetweenReps] = useState('');
   
   const [routineExercises, setRoutineExercises] = useState<ExerciseData[]>([]);
 
@@ -51,6 +55,8 @@ export default function CreateRoutineForm({
         trainer_notes: '',
         exercise_photo_url: '',
         uploading: false,
+        rest_between_sets: restBetweenSets,
+        rest_between_reps: restBetweenReps,
       }
     ]);
   };
@@ -118,6 +124,8 @@ export default function CreateRoutineForm({
       startDate || new Date().toISOString().split('T')[0],
       endDate,
       notes,
+      restBetweenSets,
+      restBetweenReps,
       routineExercises
     );
 
@@ -197,6 +205,45 @@ export default function CreateRoutineForm({
               rows={3}
               placeholder="Instrucciones para estos 15 días..."
               className="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-emerald-500 transition-colors resize-none"
+            />
+          </div>
+        </div>
+        
+        {/* General Rest Section */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6 pt-6 border-t border-neutral-800">
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-neutral-400">Descanso entre series (General)</label>
+            <input 
+              type="text"
+              value={restBetweenSets}
+              onChange={(e) => {
+                const val = e.target.value;
+                setRestBetweenSets(val);
+                // Auto-fill existing exercises that don't have it set
+                setRoutineExercises(prev => prev.map(ex => ({
+                  ...ex,
+                  rest_between_sets: ex.rest_between_sets || val
+                })));
+              }}
+              placeholder="Ej: 60s, 1.5 min..."
+              className="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-emerald-500 transition-colors"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-neutral-400">Descanso entre repeticiones (General)</label>
+            <input 
+              type="text"
+              value={restBetweenReps}
+              onChange={(e) => {
+                const val = e.target.value;
+                setRestBetweenReps(val);
+                setRoutineExercises(prev => prev.map(ex => ({
+                  ...ex,
+                  rest_between_reps: ex.rest_between_reps || val
+                })));
+              }}
+              placeholder="Ej: 0s, 5s..."
+              className="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-emerald-500 transition-colors"
             />
           </div>
         </div>
@@ -336,7 +383,29 @@ export default function CreateRoutineForm({
                     </div>
                   </div>
 
-                  {/* Row 3 */}
+                  {/* Row 4: Rest fields */}
+                  <div className="md:col-span-6 space-y-2">
+                    <label className="text-sm font-medium text-neutral-400">Descanso (Series)</label>
+                    <input 
+                      type="text"
+                      placeholder="Ej: 60s"
+                      value={ex.rest_between_sets || ''}
+                      onChange={(e) => updateExercise(ex.id, 'rest_between_sets', e.target.value)}
+                      className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-emerald-500 transition-colors"
+                    />
+                  </div>
+                  <div className="md:col-span-6 space-y-2">
+                    <label className="text-sm font-medium text-neutral-400">Descanso (Repeticiones)</label>
+                    <input 
+                      type="text"
+                      placeholder="Ej: 0s"
+                      value={ex.rest_between_reps || ''}
+                      onChange={(e) => updateExercise(ex.id, 'rest_between_reps', e.target.value)}
+                      className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-emerald-500 transition-colors"
+                    />
+                  </div>
+
+                  {/* Row 5: Notes */}
                   <div className="md:col-span-12 space-y-2">
                     <label className="text-sm font-medium text-neutral-400">Observaciones del Entrenador</label>
                     <textarea 

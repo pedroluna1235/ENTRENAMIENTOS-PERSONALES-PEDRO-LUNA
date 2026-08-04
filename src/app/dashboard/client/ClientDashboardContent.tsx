@@ -241,16 +241,21 @@ export default function ClientDashboardContent({
                                           <h4 className={`font-bold text-lg truncate transition-colors ${isCompleted ? 'text-emerald-50' : 'text-white'}`}>
                                             {ex?.name || 'Ejercicio Eliminado'}
                                           </h4>
-                                          <div className="flex items-center gap-3 mt-1">
-                                            <span className="inline-flex items-center text-sm font-semibold text-blue-400 bg-blue-400/10 px-2 py-0.5 rounded-md">
-                                              {we.sets} <span className="text-blue-400/60 mx-1 text-xs uppercase">series x</span> {we.reps} <span className="text-blue-400/60 ml-1 text-xs uppercase">reps</span>
-                                            </span>
-                                            {we.weight_guidelines && (
-                                              <span className="text-xs text-neutral-400 truncate max-w-[120px] md:max-w-[200px] hidden sm:inline-block">
-                                                {we.weight_guidelines}
+                                            <div className="flex items-center flex-wrap gap-2 mt-1">
+                                              <span className="inline-flex items-center text-sm font-semibold text-blue-400 bg-blue-400/10 px-2 py-0.5 rounded-md whitespace-nowrap">
+                                                {we.sets} <span className="text-blue-400/60 mx-1 text-xs uppercase">series x</span> {we.reps} <span className="text-blue-400/60 ml-1 text-xs uppercase">reps</span>
                                               </span>
-                                            )}
-                                          </div>
+                                              {we.rest_between_sets && (
+                                                <span className="inline-flex items-center text-xs font-semibold text-orange-400 bg-orange-400/10 px-2 py-0.5 rounded-md whitespace-nowrap">
+                                                  Descanso: {we.rest_between_sets}
+                                                </span>
+                                              )}
+                                              {we.weight_guidelines && (
+                                                <span className="text-xs text-neutral-400 truncate max-w-[120px] md:max-w-[200px] hidden sm:inline-block">
+                                                  {we.weight_guidelines}
+                                                </span>
+                                              )}
+                                            </div>
                                         </div>
 
                                         <div className="flex-shrink-0 text-neutral-400 bg-neutral-800/50 p-2 rounded-full">

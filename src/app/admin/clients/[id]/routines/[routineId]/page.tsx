@@ -119,6 +119,19 @@ export default async function RoutineDetailPage({
                 </div>
               </div>
 
+              {(workout.rest_between_sets || workout.rest_between_reps) && (
+                <div className="flex items-start gap-3 pt-4 border-t border-neutral-800">
+                  <Clock className="w-5 h-5 text-neutral-500 mt-0.5" />
+                  <div>
+                    <div className="text-sm font-medium text-neutral-400 uppercase">Descanso General</div>
+                    <div className="text-white mt-1 text-sm">
+                      {workout.rest_between_sets && <div><span className="text-neutral-400">Series:</span> {workout.rest_between_sets}</div>}
+                      {workout.rest_between_reps && <div><span className="text-neutral-400">Reps:</span> {workout.rest_between_reps}</div>}
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {workout.notes && (
                 <div className="flex items-start gap-3 pt-4 border-t border-neutral-800">
                   <Target className="w-5 h-5 text-neutral-500 mt-0.5" />
@@ -185,6 +198,18 @@ export default async function RoutineDetailPage({
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ml-12">
+                      {(ex.rest_between_sets || ex.rest_between_reps) && (
+                        <div className="bg-neutral-950/50 p-3 rounded-lg border border-neutral-800/50 md:col-span-2">
+                          <div className="text-xs text-neutral-500 uppercase font-semibold mb-1 flex items-center gap-1">
+                            <Clock className="w-3 h-3" /> Descanso
+                          </div>
+                          <div className="text-sm text-neutral-300 flex gap-4">
+                            {ex.rest_between_sets && <span><strong className="text-neutral-400">Series:</strong> {ex.rest_between_sets}</span>}
+                            {ex.rest_between_reps && <span><strong className="text-neutral-400">Reps:</strong> {ex.rest_between_reps}</span>}
+                          </div>
+                        </div>
+                      )}
+                      
                       {ex.weight_guidelines && (
                         <div className="bg-neutral-950/50 p-3 rounded-lg border border-neutral-800/50">
                           <div className="text-xs text-neutral-500 uppercase font-semibold mb-1">Pautas de Peso</div>

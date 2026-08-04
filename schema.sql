@@ -35,6 +35,8 @@ create table public.workouts (
   start_date date,
   end_date date,
   notes text,
+  rest_between_sets text,
+  rest_between_reps text,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
@@ -50,7 +52,10 @@ create table public.workout_exercises (
   exercise_photo_url text,
   exercise_video_url text,
   trainer_notes text,
-  client_feedback text
+  client_feedback text,
+  rest_between_sets text,
+  rest_between_reps text,
+  order_index integer default 0
 );
 
 -- WEIGHT HISTORY TABLE

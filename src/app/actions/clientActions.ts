@@ -72,6 +72,8 @@ export async function createRoutine(
   startDate: string,
   endDate: string,
   notes: string,
+  restBetweenSets: string,
+  restBetweenReps: string,
   exercises: {
     exercise_id: string;
     sets: number;
@@ -80,6 +82,8 @@ export async function createRoutine(
     trainer_notes: string;
     exercise_photo_url?: string;
     day_assigned?: string;
+    rest_between_sets?: string;
+    rest_between_reps?: string;
   }[]
 ) {
   const session = await getSession();
@@ -96,6 +100,8 @@ export async function createRoutine(
       start_date: startDate,
       end_date: endDate,
       notes,
+      rest_between_sets: restBetweenSets,
+      rest_between_reps: restBetweenReps,
     })
     .select()
     .single();
@@ -115,6 +121,8 @@ export async function createRoutine(
       trainer_notes: ex.trainer_notes,
       exercise_photo_url: ex.exercise_photo_url || null,
       order_index: idx,
+      rest_between_sets: ex.rest_between_sets || null,
+      rest_between_reps: ex.rest_between_reps || null,
       ...(ex.day_assigned && { day_assigned: ex.day_assigned }),
     }));
 
@@ -139,6 +147,8 @@ export async function updateRoutine(
   startDate: string,
   endDate: string,
   notes: string,
+  restBetweenSets: string,
+  restBetweenReps: string,
   exercises: {
     id?: string;
     exercise_id: string;
@@ -148,6 +158,8 @@ export async function updateRoutine(
     trainer_notes: string;
     exercise_photo_url?: string;
     day_assigned?: string;
+    rest_between_sets?: string;
+    rest_between_reps?: string;
   }[]
 ) {
   const session = await getSession();
@@ -163,6 +175,8 @@ export async function updateRoutine(
       start_date: startDate,
       end_date: endDate,
       notes,
+      rest_between_sets: restBetweenSets,
+      rest_between_reps: restBetweenReps,
     })
     .eq('id', workoutId);
 
@@ -199,6 +213,8 @@ export async function updateRoutine(
       exercise_photo_url: ex.exercise_photo_url || null,
       day_assigned: ex.day_assigned || null,
       order_index: i,
+      rest_between_sets: ex.rest_between_sets || null,
+      rest_between_reps: ex.rest_between_reps || null,
     };
 
     if (ex.id && existingDbIds.includes(ex.id)) {
