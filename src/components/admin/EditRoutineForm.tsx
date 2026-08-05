@@ -384,7 +384,13 @@ export default function EditRoutineForm({
                   </button>
                 </div>
                 
-                <h4 className="text-emerald-500 font-bold mb-4">Ejercicio {routineExercises.findIndex(e => e.id === ex.id) + 1}</h4>
+                <h4 className="text-emerald-500 font-bold mb-4">
+                  Ejercicio {
+                    routineExercises
+                      .slice(0, routineExercises.findIndex(e => e.id === ex.id))
+                      .filter(e => e.day_assigned === ex.day_assigned).length + 1
+                  }
+                </h4>
                 
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
                   {/* Row 1 */}
