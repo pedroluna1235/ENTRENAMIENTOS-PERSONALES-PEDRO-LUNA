@@ -116,6 +116,31 @@ export default function EditRoutineForm({
     setRoutineExercises(newExercises);
   };
 
+  const duplicateDay = () => {
+    if (!selectedDayFilter) {
+      alert('Por favor, selecciona un día para duplicarlo.');
+      return;
+    }
+
+    const newDate = window.prompt('Introduce la nueva fecha para el día duplicado (YYYY-MM-DD):', selectedDayFilter);
+    if (!newDate) return;
+
+    const exercisesToDuplicate = routineExercises.filter(ex => ex.day_assigned === selectedDayFilter);
+    if (exercisesToDuplicate.length === 0) {
+      alert('No hay ejercicios para duplicar en el día seleccionado.');
+      return;
+    }
+
+    const newExercises = exercisesToDuplicate.map(ex => ({
+      ...ex,
+      id: crypto.randomUUID(),
+      day_assigned: newDate
+    }));
+
+    setRoutineExercises([...routineExercises, ...newExercises]);
+    setSelectedDayFilter(newDate); // Cambiar la vista al nuevo día
+  };
+
   const updateExercise = (id: string, field: keyof ExerciseData, value: any) => {
     setRoutineExercises(routineExercises.map(ex => ex.id === id ? { ...ex, [field]: value } : ex));
   };
@@ -315,6 +340,15 @@ export default function EditRoutineForm({
                 </button>
               )}
             </div>
+            {selectedDayFilter && (
+              <button
+                type="button"
+                onClick={duplicateDay}
+                className="flex items-center justify-center gap-2 px-4 py-2 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 font-medium rounded-lg transition-colors border border-emerald-500/30 w-full sm:w-auto"
+              >
+                <Copy className="w-4 h-4" /> Duplicar Día
+              </button>
+            )}
             <button
               type="button"
               onClick={addExercise}
