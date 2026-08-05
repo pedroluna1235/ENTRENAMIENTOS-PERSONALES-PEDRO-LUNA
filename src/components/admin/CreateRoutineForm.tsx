@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createRoutine } from '@/app/actions/clientActions';
 import { supabase } from '@/lib/supabaseClient';
-import { Save, Plus, Trash2, ArrowLeft, Loader2, Dumbbell, Image as ImageIcon, ArrowUp, ArrowDown } from 'lucide-react';
+import { Save, Plus, Trash2, ArrowLeft, Loader2, Dumbbell, Image as ImageIcon, ArrowUp, ArrowDown, Copy } from 'lucide-react';
 import Link from 'next/link';
 
 type ExerciseData = {
@@ -39,6 +39,7 @@ export default function CreateRoutineForm({
   const [notes, setNotes] = useState('');
   const [restBetweenSets, setRestBetweenSets] = useState('');
   const [restBetweenReps, setRestBetweenReps] = useState('');
+  const [selectedDayFilter, setSelectedDayFilter] = useState<string>('');
   
   const [routineExercises, setRoutineExercises] = useState<ExerciseData[]>([]);
 
@@ -48,7 +49,7 @@ export default function CreateRoutineForm({
       {
         id: crypto.randomUUID(),
         exercise_id: exercises.length > 0 ? exercises[0].id : '',
-        day_assigned: '',
+        day_assigned: selectedDayFilter || '',
         sets: 3,
         reps: 10,
         weight_guidelines: '',
@@ -65,14 +66,37 @@ export default function CreateRoutineForm({
     setRoutineExercises(routineExercises.filter(ex => ex.id !== id));
   };
 
-  const moveExercise = (index: number, direction: 'up' | 'down') => {
-    if (direction === 'up' && index === 0) return;
-    if (direction === 'down' && index === routineExercises.length - 1) return;
+  const moveExercise = (id: string, direction: 'up' | 'down') => {
+    const listToUse = selectedDayFilter 
+      ? routineExercises.filter(ex => ex.day_assigned === selectedDayFilter) 
+      : routineExercises;
+      
+    const currentIdxInList = listToUse.findIndex(ex => ex.id === id);
+    if (currentIdxInList === -1) return;
+    if (direction === 'up' && currentIdxInList === 0) return;
+    if (direction === 'down' && currentIdxInList === listToUse.length - 1) return;
+
+    const swapId = listToUse[direction === 'up' ? currentIdxInList - 1 : currentIdxInList + 1].id;
     
+    const globalIdx1 = routineExercises.findIndex(ex => ex.id === id);
+    const globalIdx2 = routineExercises.findIndex(ex => ex.id === swapId);
+
     const newExercises = [...routineExercises];
-    const swapIndex = direction === 'up' ? index - 1 : index + 1;
-    [newExercises[index], newExercises[swapIndex]] = [newExercises[swapIndex], newExercises[index]];
+    [newExercises[globalIdx1], newExercises[globalIdx2]] = [newExercises[globalIdx2], newExercises[globalIdx1]];
     
+    setRoutineExercises(newExercises);
+  };
+
+  const duplicateExercise = (id: string) => {
+    const index = routineExercises.findIndex(ex => ex.id === id);
+    if (index === -1) return;
+    const exerciseToDuplicate = routineExercises[index];
+    const newExercise = {
+      ...exerciseToDuplicate,
+      id: crypto.randomUUID(),
+    };
+    const newExercises = [...routineExercises];
+    newExercises.splice(index + 1, 0, newExercise);
     setRoutineExercises(newExercises);
   };
 
@@ -250,18 +274,38 @@ export default function CreateRoutineForm({
 
       {/* Exercises Form */}
       <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <h2 className="text-xl font-bold text-white flex items-center gap-2">
             <Dumbbell className="w-5 h-5 text-emerald-500" />
             Ejercicios de la Rutina
           </h2>
-          <button
-            type="button"
-            onClick={addExercise}
-            className="flex items-center gap-2 px-4 py-2 bg-neutral-800 hover:bg-neutral-700 text-white font-medium rounded-lg transition-colors border border-neutral-700"
-          >
-            <Plus className="w-4 h-4" /> Añadir Ejercicio
-          </button>
+          <div className="flex flex-col sm:flex-row items-center gap-3">
+            <div className="flex items-center gap-2 bg-neutral-950 border border-neutral-800 rounded-lg px-3 py-2 w-full sm:w-auto">
+              <span className="text-sm text-neutral-400 whitespace-nowrap">Día:</span>
+              <input 
+                type="date" 
+                value={selectedDayFilter}
+                onChange={(e) => setSelectedDayFilter(e.target.value)}
+                className="bg-transparent border-none text-white focus:outline-none focus:ring-0 text-sm w-full"
+              />
+              {selectedDayFilter && (
+                <button 
+                  type="button"
+                  onClick={() => setSelectedDayFilter('')}
+                  className="text-neutral-500 hover:text-white text-xs ml-2"
+                >
+                  Limpiar
+                </button>
+              )}
+            </div>
+            <button
+              type="button"
+              onClick={addExercise}
+              className="flex items-center justify-center gap-2 px-4 py-2 bg-neutral-800 hover:bg-neutral-700 text-white font-medium rounded-lg transition-colors border border-neutral-700 w-full sm:w-auto"
+            >
+              <Plus className="w-4 h-4" /> Añadir Ejercicio
+            </button>
+          </div>
         </div>
 
         {routineExercises.length === 0 ? (
@@ -277,35 +321,53 @@ export default function CreateRoutineForm({
           </div>
         ) : (
           <div className="space-y-6">
-            {routineExercises.map((ex, index) => (
+            {(selectedDayFilter ? routineExercises.filter(ex => ex.day_assigned === selectedDayFilter) : routineExercises).length === 0 && selectedDayFilter && (
+              <div className="py-8 text-center text-neutral-500">
+                No hay ejercicios asignados para este día.
+              </div>
+            )}
+            {(selectedDayFilter ? routineExercises.filter(ex => ex.day_assigned === selectedDayFilter) : routineExercises).map((ex, index, arr) => (
               <div key={ex.id} className="relative bg-neutral-950 border border-neutral-800 rounded-xl p-6 group">
-                <div className="absolute top-4 right-4 flex items-center gap-2">
+                <div className="absolute top-4 right-4 flex items-center gap-1 sm:gap-2 bg-neutral-900 p-1 rounded-lg border border-neutral-800">
                   <button
                     type="button"
-                    onClick={() => moveExercise(index, 'up')}
+                    title="Duplicar ejercicio"
+                    onClick={() => duplicateExercise(ex.id)}
+                    className="p-1.5 text-neutral-400 hover:text-white hover:bg-neutral-800 rounded-md transition-colors"
+                  >
+                    <Copy className="w-4 h-4 sm:w-5 sm:h-5" />
+                  </button>
+                  <div className="w-px h-4 bg-neutral-800 mx-1"></div>
+                  <button
+                    type="button"
+                    title="Mover arriba"
+                    onClick={() => moveExercise(ex.id, 'up')}
                     disabled={index === 0}
-                    className="p-2 text-neutral-500 hover:text-white hover:bg-neutral-800 rounded-lg transition-colors disabled:opacity-30"
+                    className="p-1.5 text-neutral-400 hover:text-white hover:bg-neutral-800 rounded-md transition-colors disabled:opacity-30"
                   >
-                    <ArrowUp className="w-5 h-5" />
+                    <ArrowUp className="w-4 h-4 sm:w-5 sm:h-5" />
                   </button>
                   <button
                     type="button"
-                    onClick={() => moveExercise(index, 'down')}
-                    disabled={index === routineExercises.length - 1}
-                    className="p-2 text-neutral-500 hover:text-white hover:bg-neutral-800 rounded-lg transition-colors disabled:opacity-30"
+                    title="Mover abajo"
+                    onClick={() => moveExercise(ex.id, 'down')}
+                    disabled={index === arr.length - 1}
+                    className="p-1.5 text-neutral-400 hover:text-white hover:bg-neutral-800 rounded-md transition-colors disabled:opacity-30"
                   >
-                    <ArrowDown className="w-5 h-5" />
+                    <ArrowDown className="w-4 h-4 sm:w-5 sm:h-5" />
                   </button>
+                  <div className="w-px h-4 bg-neutral-800 mx-1"></div>
                   <button
                     type="button"
+                    title="Eliminar"
                     onClick={() => removeExercise(ex.id)}
-                    className="p-2 text-neutral-500 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-colors"
+                    className="p-1.5 text-neutral-400 hover:text-red-500 hover:bg-red-500/10 rounded-md transition-colors"
                   >
-                    <Trash2 className="w-5 h-5" />
+                    <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
                   </button>
                 </div>
                 
-                <h4 className="text-emerald-500 font-bold mb-4">Ejercicio {index + 1}</h4>
+                <h4 className="text-emerald-500 font-bold mb-4">Ejercicio {routineExercises.findIndex(e => e.id === ex.id) + 1}</h4>
                 
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
                   {/* Row 1 */}
